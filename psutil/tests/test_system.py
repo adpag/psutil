@@ -717,6 +717,11 @@ class TestSystemAPIs(unittest.TestCase):
     @unittest.skipIf(APPVEYOR or TRAVIS and not psutil.users(),
                      "unreliable on APPVEYOR or TRAVIS")
     def test_users(self):
+        def os_has_user_pid():
+            if WINDOWS or (BSD and not psutil._psplatform._user_has_pid()):
+                return False
+            return True
+
         users = psutil.users()
         self.assertNotEqual(users, [])
         for user in users:
@@ -729,9 +734,10 @@ class TestSystemAPIs(unittest.TestCase):
             user.host
             assert user.started > 0.0, user
             datetime.datetime.fromtimestamp(user.started)
-            if WINDOWS or OPENBSD:
+            if not os_has_user_pid():
                 self.assertIsNone(user.pid)
             else:
+                self.assertIsNotNone(user.pid)
                 psutil.Process(user.pid)
 
     def test_cpu_stats(self):

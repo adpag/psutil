@@ -826,11 +826,7 @@ psutil_users(PyObject *self, PyObject *args) {
             py_tty,             // tty
             py_hostname,        // hostname
             (float)ut.ut_time,  // start time
-#ifdef PSUTIL_OPENBSD
             -1                  // process id (set to None later)
-#else
-            ut.ut_pid           // process id
-#endif
         );
         if (!py_tuple) {
             fclose(fp);

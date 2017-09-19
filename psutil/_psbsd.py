@@ -8,6 +8,8 @@ import contextlib
 import errno
 import functools
 import os
+import platform
+import re
 import xml.etree.ElementTree as ET
 from collections import namedtuple
 from socket import AF_INET
@@ -440,6 +442,16 @@ def boot_time():
     return cext.boot_time()
 
 
+def _user_has_pid():
+    if OPENBSD:
+        return False
+    if FREEBSD:
+        os_version = int(re.match('([0-9]+)\..*', platform.release()).group(1))
+        if os_version < 9:
+            return False
+    return True
+
+
 def users():
     """Return currently connected users as a list of namedtuples."""
     retlist = []
@@ -447,7 +459,7 @@ def users():
     for item in rawlist:
         user, tty, hostname, tstamp, pid = item
         if pid == -1:
-            assert OPENBSD
+            assert not _user_has_pid()
             pid = None
         if tty == '~':
             continue  # reboot or shutdown
