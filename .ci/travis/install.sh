@@ -7,38 +7,46 @@ uname -a
 python -c "import sys; print(sys.version)"
 
 if [[ "$(uname -s)" == 'Darwin' ]]; then
-    brew update || brew update
-    brew outdated pyenv || brew upgrade pyenv
-    brew install pyenv-virtualenv
-
-    if which pyenv > /dev/null; then
-        eval "$(pyenv init -)"
-    fi
-
     case "${PYVER}" in
-        # py26)
-        #     pyenv install 2.6.9
-        #     pyenv virtualenv 2.6.9 psutil
-        #     ;;
-        py27)
-            pyenv install -s 2.7.10
-            pyenv virtualenv 2.7.10 psutil
+        py26)
+            _python_version=2.6.9
             ;;
-        # py32)
-        #     pyenv install 3.2.6
-        #     pyenv virtualenv 3.2.6 psutil
-        #     ;;
-        # py33)
-        #     pyenv install 3.3.6
-        #     pyenv virtualenv 3.3.6 psutil
-        #     ;;
+        py27)
+            _python_version=2.7.10
+            ;;
+        py32)
+            _python_version=3.2.6
+            ;;
+        py33)
+            _python_version=3.3.6
+            ;;
         py34)
-            pyenv install -s 3.4.3
-            pyenv virtualenv 3.4.3 psutil
+            _python_version=3.4.3
+            ;;
+        *)
+            echo Python version not set for "${PYVER}"
+            exit 1
             ;;
     esac
-    pyenv rehash
-    pyenv activate psutil
+
+    _psutil_env=$HOME/.pyenv/versions/$_python_version/envs/psutil
+
+    if [ ! -d $_psutil_env ] then
+        brew update || brew update
+        brew outdated pyenv || brew upgrade pyenv
+        brew install pyenv-virtualenv
+
+        if which pyenv > /dev/null; then
+            eval "$(pyenv init -)"
+        fi
+
+        pyenv install $_python_version
+        pyenv virtualenv $_python_version psutil
+        pyenv rehash
+        pyenv activate psutil
+    else
+        . $_psutil_env/bin/activate
+    fi
 fi
 
 if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]] || [[ $PYVER == 'py26' ]]; then
