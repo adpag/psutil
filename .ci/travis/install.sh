@@ -3,7 +3,7 @@
 set -e
 set -x
 
-. common.sh
+. $(dirname $0)/common.sh
 
 uname -a
 python -c "import sys; print(sys.version)"

@@ -3,7 +3,7 @@
 set -e
 set -x
 
-. common.sh
+. $(dirname $0)/common.sh
 
 # setup OSX
 if [[ "$(uname -s)" == 'Darwin' ]]; then
