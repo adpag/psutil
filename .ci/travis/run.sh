@@ -3,15 +3,15 @@
 set -e
 set -x
 
-PYVER=`python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'`
+. common.sh
 
 # setup OSX
 if [[ "$(uname -s)" == 'Darwin' ]]; then
-    if which pyenv > /dev/null; then
-        eval "$(pyenv init -)"
-    fi
-    pyenv activate psutil
+    get_psutil_env_dir _psutil_env
+    . $_psutil_env/bin/activate
 fi
+
+PYVER=`python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))'`
 
 # install psutil
 make clean

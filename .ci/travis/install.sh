@@ -3,33 +3,13 @@
 set -e
 set -x
 
+. common.sh
+
 uname -a
 python -c "import sys; print(sys.version)"
 
 if [[ "$(uname -s)" == 'Darwin' ]]; then
-    case "${PYVER}" in
-        py26)
-            _python_version=2.6.9
-            ;;
-        py27)
-            _python_version=2.7.10
-            ;;
-        py32)
-            _python_version=3.2.6
-            ;;
-        py33)
-            _python_version=3.3.6
-            ;;
-        py34)
-            _python_version=3.4.3
-            ;;
-        *)
-            echo Python version not set for "${PYVER}"
-            exit 1
-            ;;
-    esac
-
-    _psutil_env=$HOME/.pyenv/versions/$_python_version/envs/psutil
+    get_psutil_env_dir _psutil_env
 
     if [ ! -d $_psutil_env ]; then
         brew update || brew update
@@ -40,6 +20,7 @@ if [[ "$(uname -s)" == 'Darwin' ]]; then
             eval "$(pyenv init -)"
         fi
 
+        get_required_python_version _python_version
         pyenv install $_python_version
         pyenv virtualenv $_python_version psutil
         pyenv rehash
