@@ -31,7 +31,7 @@ if [[ "$(uname -s)" == 'Darwin' ]]; then
 
     _psutil_env=$HOME/.pyenv/versions/$_python_version/envs/psutil
 
-    if [ ! -d $_psutil_env ] then
+    if [ ! -d $_psutil_env ]; then
         brew update || brew update
         brew outdated pyenv || brew upgrade pyenv
         brew install pyenv-virtualenv
